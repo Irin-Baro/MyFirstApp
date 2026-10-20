@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,12 +29,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppListScreen(
-    onAppClick: (AppInfo) -> Unit
+    onAppClick: (AppInfo) -> Unit,
+    viewModel: AppListViewModel = viewModel()
 ) {
+    // Подписываемся на поток данных из ViewModel
+    val apps by viewModel.apps.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -57,9 +65,10 @@ fun AppListScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = 12.dp),
-            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(sampleApps) { app ->
+            // Теперь используем данные из ViewModel, а не из sampleApps
+            items(apps) { app ->
                 AppListItem(
                     app = app,
                     onClick = { onAppClick(app) }
