@@ -31,7 +31,9 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppListScreen() {
+fun AppListScreen(
+    onAppClick: (AppInfo) -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -58,15 +60,22 @@ fun AppListScreen() {
             verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
         ) {
             items(sampleApps) { app ->
-                AppListItem(app = app)
+                AppListItem(
+                    app = app,
+                    onClick = { onAppClick(app) }
+                )
             }
         }
     }
 }
 
 @Composable
-fun AppListItem(app: AppInfo) {
+fun AppListItem(
+    app: AppInfo,
+    onClick: () -> Unit
+) {
     Card(
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
