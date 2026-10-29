@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -21,18 +23,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.myapplication.domain.AppDomain
+import com.example.myapplication.data.AppRepositoryImpl
 
 @Composable
 fun ShowcasePager(
-    onAppClick: (AppInfo) -> Unit
+    onAppClick: (AppDomain) -> Unit
 ) {
-    // Фиксируем 9 приложений для витрины (по 3 на каждую из 3 страниц)
-    val showcaseApps = sampleApps.take(9)
+    // Берем данные из репозитория
+    val showcaseApps = AppRepositoryImpl().getApps().take(9)
 
     val pagerState = rememberPagerState(pageCount = { 3 })
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        // Заголовок
         Text(
             text = "Витрина",
             style = MaterialTheme.typography.titleMedium,
@@ -42,12 +45,10 @@ fun ShowcasePager(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Горизонтальный пейджер
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxWidth()
         ) { page ->
-            // Определяем, какие 3 приложения показывать на текущей странице
             val startIndex = page * 3
             val pageApps = showcaseApps.subList(startIndex, startIndex + 3)
 
@@ -58,7 +59,6 @@ fun ShowcasePager(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 pageApps.forEach { app ->
-                    // Переиспользуем нашу карточку, но в компактном виде (только иконка и название)
                     ShowcaseItem(
                         app = app,
                         onClick = { onAppClick(app) }
@@ -71,7 +71,7 @@ fun ShowcasePager(
 
 @Composable
 private fun ShowcaseItem(
-    app: AppInfo,
+    app: AppDomain,
     onClick: () -> Unit
 ) {
     Card(
@@ -86,7 +86,7 @@ private fun ShowcaseItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = app.icon,
+                imageVector = Icons.Filled.Info,
                 contentDescription = app.name,
                 modifier = Modifier.size(40.dp),
                 tint = MaterialTheme.colorScheme.primary
