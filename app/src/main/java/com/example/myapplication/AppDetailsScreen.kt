@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -33,15 +34,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.myapplication.domain.AppDomain
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppDetailsScreen(
-    app: AppInfo,
+    app: AppDomain, // <-- Изменили на AppDomain
     onBackClick: () -> Unit,
     onShareClick: () -> Unit,
     onInstallClick: () -> Unit,
-    onShowcaseAppClick: (AppInfo) -> Unit
+    onShowcaseAppClick: (AppDomain) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -50,7 +52,7 @@ fun AppDetailsScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack, // <-- Вернули стрелочку назад
                             contentDescription = "Назад",
                             tint = Color.White
                         )
@@ -79,10 +81,10 @@ fun AppDetailsScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Шапка: иконка + название + категория
+            // Шапка: иконка-заглушка + название + категория
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = app.icon,
+                    imageVector = Icons.Filled.Info, // <-- Заглушка, так как в Domain нет иконки
                     contentDescription = app.name,
                     modifier = Modifier.size(72.dp),
                     tint = MaterialTheme.colorScheme.primary

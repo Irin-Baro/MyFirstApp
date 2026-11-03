@@ -24,19 +24,22 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import com.example.myapplication.domain.AppDomain
+import com.example.myapplication.presentation.AppListViewModel
+import com.example.myapplication.presentation.AppUiModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppListScreen(
-    onAppClick: (AppInfo) -> Unit,
+    onAppClick: (AppDomain) -> Unit,
     viewModel: AppListViewModel = viewModel()
 ) {
     // Подписываемся на поток данных из ViewModel
@@ -67,11 +70,10 @@ fun AppListScreen(
                 .padding(horizontal = 12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Теперь используем данные из ViewModel, а не из sampleApps
-            items(apps) { app ->
+            items(apps) { appUi ->
                 AppListItem(
-                    app = app,
-                    onClick = { onAppClick(app) }
+                    appUi = appUi,
+                    onClick = { onAppClick(appUi.domain) }
                 )
             }
         }
@@ -80,9 +82,11 @@ fun AppListScreen(
 
 @Composable
 fun AppListItem(
-    app: AppInfo,
+    appUi: AppUiModel,
     onClick: () -> Unit
 ) {
+    val app = appUi.domain // Достаем чистые данные из Domain
+
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
@@ -94,9 +98,8 @@ fun AppListItem(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Иконка приложения
             Icon(
-                imageVector = app.icon,
+                imageVector = appUi.icon, // Берем иконку из UI-модели
                 contentDescription = app.name,
                 modifier = Modifier.size(48.dp),
                 tint = MaterialTheme.colorScheme.primary
@@ -104,7 +107,6 @@ fun AppListItem(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // Текстовая информация
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = app.name,
