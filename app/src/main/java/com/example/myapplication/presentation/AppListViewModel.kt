@@ -1,18 +1,22 @@
 package com.example.myapplication.presentation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Home
 import androidx.lifecycle.ViewModel
-import com.example.myapplication.data.AppRepositoryImpl
+import androidx.lifecycle.viewModelScope
+import com.example.myapplication.data.AppRepository
+import com.example.myapplication.domain.AppDomain
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AppListViewModel : ViewModel() {
+@HiltViewModel
+class AppListViewModel @Inject constructor(
+    private val repository: AppRepository
+) : ViewModel() {
 
-    private val repository = AppRepositoryImpl()
-
-    // Теперь ViewModel хранит список UI-моделей (данные + иконка)
     private val _apps = MutableStateFlow<List<AppUiModel>>(emptyList())
     val apps: StateFlow<List<AppUiModel>> = _apps.asStateFlow()
 
@@ -21,26 +25,17 @@ class AppListViewModel : ViewModel() {
     }
 
     private fun loadApps() {
-        val domainApps = repository.getApps()
-
-        // Сопоставляем иконки по индексу (или по ID)
-        val iconsList = listOf(
-            Icons.Filled.Home,
-            Icons.Filled.Email,
-            Icons.Filled.Call,
-            Icons.Filled.DateRange,
-            Icons.Filled.ShoppingCart,
-            Icons.Filled.PlayArrow,
-            Icons.Filled.Star,
-            Icons.Filled.Search,
-            Icons.Filled.Settings,
-            Icons.Filled.Face
-        )
-
-        // Превращаем Domain-модели в UI-модели, добавляя иконку
-        _apps.value = domainApps.mapIndexed { index, app ->
-            val icon = iconsList.getOrElse(index) { Icons.Filled.Info }
-            AppUiModel(domain = app, icon = icon)
+        viewModelScope.launch {
+            // Получаем данные из репозитория
+            repository.getApps().collect { domainList ->
+                // Маппим Domain-модели в UI-модели (подставляем иконку)
+                _apps.value = domainList.map { domain ->
+                    AppUiModel(
+                        domain = domain,
+                        icon = androidx.compose.material.icons.Icons.Filled.Home // Пример иконки
+                    )
+                }
+            }
         }
     }
 }

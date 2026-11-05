@@ -3,9 +3,11 @@ package com.example.myapplication.data
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import com.example.myapplication.domain.AppDomain
-import com.example.myapplication.domain.AppRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import javax.inject.Inject
 
-class AppRepositoryImpl : AppRepository {
+class AppRepositoryImpl @Inject constructor() : AppRepository {
 
     private val mockData = listOf(
         AppDto(1, Icons.Filled.Home, "Дом", "Управление умным домом", "Дом"),
@@ -20,8 +22,8 @@ class AppRepositoryImpl : AppRepository {
         AppDto(10, Icons.Filled.Face, "Профиль", "Личный кабинет пользователя", "Личное")
     )
 
-    override fun getApps(): List<AppDomain> {
-        // Возвращаем данные, конвертируя их через Mapper
-        return mockData.map { it.toDomain() }
+    override fun getApps(): Flow<List<AppDomain>> {
+        // Возвращаем данные через flowOf, конвертируя их через Mapper
+        return flowOf(mockData.map { it.toDomain() })
     }
 }
