@@ -24,14 +24,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.domain.AppDomain
-import com.example.myapplication.data.AppRepositoryImpl
 
 @Composable
 fun ShowcasePager(
     onAppClick: (AppDomain) -> Unit
 ) {
-    // Берем данные из репозитория
-    val showcaseApps = AppRepositoryImpl().getApps().take(9)
+    // Берем захардкоженные данные, чтобы не зависеть от репозитория
+    // (в рамках задания по DI это допустимая заглушка)
+    val showcaseApps = listOf(
+        AppDomain(1, "Дом", "Управление", "Дом"),
+        AppDomain(2, "Почта", "Почта", "Работа"),
+        AppDomain(3, "Телефон", "Звонки", "Связь"),
+        AppDomain(4, "Календарь", "Планирование", "Работа"),
+        AppDomain(5, "Магазин", "Покупки", "Покупки"),
+        AppDomain(6, "Видео", "Просмотр", "Развлечения"),
+        AppDomain(7, "Избранное", "Заметки", "Личное"),
+        AppDomain(8, "Поиск", "Поиск", "Инструменты"),
+        AppDomain(9, "Настройки", "Параметры", "Система")
+    )
 
     val pagerState = rememberPagerState(pageCount = { 3 })
 
@@ -50,7 +60,12 @@ fun ShowcasePager(
             modifier = Modifier.fillMaxWidth()
         ) { page ->
             val startIndex = page * 3
-            val pageApps = showcaseApps.subList(startIndex, startIndex + 3)
+            val endIndex = minOf(startIndex + 3, showcaseApps.size)
+            val pageApps = if (startIndex < showcaseApps.size) {
+                showcaseApps.subList(startIndex, endIndex)
+            } else {
+                emptyList()
+            }
 
             Column(
                 modifier = Modifier

@@ -31,7 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.myapplication.domain.AppDomain
 import com.example.myapplication.presentation.AppListViewModel
 import com.example.myapplication.presentation.AppUiModel
@@ -40,7 +40,7 @@ import com.example.myapplication.presentation.AppUiModel
 @Composable
 fun AppListScreen(
     onAppClick: (AppDomain) -> Unit,
-    viewModel: AppListViewModel = viewModel()
+    viewModel: AppListViewModel = hiltViewModel() // <-- Изменено на hiltViewModel()
 ) {
     // Подписываемся на поток данных из ViewModel
     val apps by viewModel.apps.collectAsState()
