@@ -31,23 +31,17 @@ fun AppNavigation() {
         // Экран деталей приложения
         composable(
             route = "app_details/{appId}",
-            arguments = listOf(navArgument("appId") { type = NavType.IntType })
+            arguments = listOf(navArgument("appId") { type = NavType.StringType })
         ) { backStackEntry ->
-            val appId = backStackEntry.arguments?.getInt("appId")
+            val appId = backStackEntry.arguments?.getString("appId")
 
-            // В реальном проекте здесь должна быть AppDetailsViewModel,
-            // которая берёт приложение из репозитория через Hilt.
-            // Чтобы не усложнять, мы просто передадим ID, а внутри экрана
-            // возьмём данные из общего списка (если он уже загружен).
-            // Но чтобы не было краша, давайте просто передадим заглушку.
-
-            // ВНИМАНИЕ: Если у вас нет AppDetailsViewModel, мы сделаем временную заглушку,
-            // чтобы приложение запустилось.
+            // Но так как мы не передали apiService вручную, лучше использовать заглушку
+            // В следующем задании мы сделаем AppDetailsViewModel, а пока просто покажем ID
             val dummyApp = com.example.myapplication.domain.AppDomain(
-                id = appId ?: 0,
-                name = "Загрузка...",
-                description = "",
-                category = ""
+                id = appId ?: "",
+                name = "Приложение $appId", // Показываем ID вместо "Загрузка..."
+                description = "Подробная информация появится в следующем задании",
+                category = "Категория"
             )
 
             AppDetailsScreen(

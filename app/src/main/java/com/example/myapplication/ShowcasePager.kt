@@ -32,15 +32,15 @@ fun ShowcasePager(
     // Берем захардкоженные данные, чтобы не зависеть от репозитория
     // (в рамках задания по DI это допустимая заглушка)
     val showcaseApps = listOf(
-        AppDomain(1, "Дом", "Управление", "Дом"),
-        AppDomain(2, "Почта", "Почта", "Работа"),
-        AppDomain(3, "Телефон", "Звонки", "Связь"),
-        AppDomain(4, "Календарь", "Планирование", "Работа"),
-        AppDomain(5, "Магазин", "Покупки", "Покупки"),
-        AppDomain(6, "Видео", "Просмотр", "Развлечения"),
-        AppDomain(7, "Избранное", "Заметки", "Личное"),
-        AppDomain(8, "Поиск", "Поиск", "Инструменты"),
-        AppDomain(9, "Настройки", "Параметры", "Система")
+        AppDomain(id = "1", name = "Дом", description = "Управление", category = "Дом"),
+        AppDomain(id = "2", name = "Почта", description = "Почта", category = "Работа"),
+        AppDomain(id = "3", name = "Телефон", description = "Звонки", category = "Связь"),
+        AppDomain(id = "4", name = "Календарь", description = "Планирование", category = "Работа"),
+        AppDomain(id = "5", name = "Магазин", description = "Покупки", category = "Покупки"),
+        AppDomain(id = "6", name = "Видео", description = "Просмотр", category = "Развлечения"),
+        AppDomain(id = "7", name = "Избранное", description = "Заметки", category = "Личное"),
+        AppDomain(id = "8", name = "Поиск", description = "Поиск", category = "Инструменты"),
+        AppDomain(id = "9", name = "Настройки", description = "Параметры", category = "Система")
     )
 
     val pagerState = rememberPagerState(pageCount = { 3 })
