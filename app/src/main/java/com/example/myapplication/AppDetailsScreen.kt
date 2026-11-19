@@ -17,6 +17,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,22 +30,39 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.myapplication.domain.AppDomain
+import com.example.myapplication.presentation.AppDetailsState
+import com.example.myapplication.presentation.AppDetailsViewModel
+import com.example.myapplication.presentation.InstallState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppDetailsScreen(
-    app: AppDomain, // <-- Изменили на AppDomain
+    app: AppDomain,
     onBackClick: () -> Unit,
     onShareClick: () -> Unit,
-    onInstallClick: () -> Unit,
-    onShowcaseAppClick: (AppDomain) -> Unit
+    onShowcaseAppClick: (AppDomain) -> Unit,
+    viewModel: AppDetailsViewModel = hiltViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
+
+    // КЛЮЧЕВАЯ СТРОКА: передаем данные приложения в ViewModel
+    LaunchedEffect(app) {
+        viewModel.initContent(app)
+    }
+
+    // Определяем текущее состояние кнопки
+    val currentInstallState = (state as? AppDetailsState.Content)?.installState ?: InstallState.NotInstalled
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -52,7 +70,7 @@ fun AppDetailsScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack, // <-- Вернули стрелочку назад
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Назад",
                             tint = Color.White
                         )
@@ -81,10 +99,9 @@ fun AppDetailsScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Шапка: иконка-заглушка + название + категория
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Filled.Info, // <-- Заглушка, так как в Domain нет иконки
+                    imageVector = Icons.Filled.Info,
                     contentDescription = app.name,
                     modifier = Modifier.size(72.dp),
                     tint = MaterialTheme.colorScheme.primary
@@ -107,17 +124,13 @@ fun AppDetailsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Кнопка «Установить»
-            Button(
-                onClick = onInstallClick,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Установить")
-            }
+            InstallButton(
+                installState = currentInstallState,
+                onInstallClick = { viewModel.onInstallClick() }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Скриншоты (заглушка)
             Text(
                 text = "Скриншоты",
                 style = MaterialTheme.typography.titleMedium,
@@ -141,7 +154,6 @@ fun AppDetailsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Описание
             Text(
                 text = "Описание приложения",
                 style = MaterialTheme.typography.titleMedium,
@@ -159,7 +171,6 @@ fun AppDetailsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Разработчик (заглушка)
             Text(
                 text = "Разработчик",
                 style = MaterialTheme.typography.titleMedium,
@@ -173,10 +184,46 @@ fun AppDetailsScreen(
             )
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Блок «Витрина»
             ShowcasePager(
                 onAppClick = onShowcaseAppClick
             )
+        }
+    }
+}
+
+@Composable
+fun InstallButton(
+    installState: InstallState,
+    onInstallClick: () -> Unit
+) {
+    when (installState) {
+        is InstallState.NotInstalled -> {
+            Button(
+                onClick = onInstallClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Установить")
+            }
+        }
+        is InstallState.Installing -> {
+            Button(
+                onClick = onInstallClick,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text("Отменить (${installState.progress}%)")
+            }
+        }
+        is InstallState.Installed -> {
+            Button(
+                onClick = { },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = false
+            ) {
+                Text("Установлено")
+            }
         }
     }
 }

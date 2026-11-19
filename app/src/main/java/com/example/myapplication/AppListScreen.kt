@@ -40,9 +40,8 @@ import com.example.myapplication.presentation.AppUiModel
 @Composable
 fun AppListScreen(
     onAppClick: (AppDomain) -> Unit,
-    viewModel: AppListViewModel = hiltViewModel() // <-- Изменено на hiltViewModel()
+    viewModel: AppListViewModel = hiltViewModel()
 ) {
-    // Подписываемся на поток данных из ViewModel
     val apps by viewModel.apps.collectAsState()
 
     Scaffold(
@@ -85,7 +84,7 @@ fun AppListItem(
     appUi: AppUiModel,
     onClick: () -> Unit
 ) {
-    val app = appUi.domain // Достаем чистые данные из Domain
+    val app = appUi.domain
 
     Card(
         onClick = onClick,
@@ -99,7 +98,7 @@ fun AppListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = appUi.icon, // Берем иконку из UI-модели
+                imageVector = appUi.icon,
                 contentDescription = app.name,
                 modifier = Modifier.size(48.dp),
                 tint = MaterialTheme.colorScheme.primary
@@ -108,11 +107,24 @@ fun AppListItem(
             Spacer(modifier = Modifier.width(12.dp))
 
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = app.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                // Название и рейтинг в одной строке
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = app.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    // Если рейтинг загружен — показываем звездочку
+                    if (appUi.rating != null) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "⭐ ${String.format("%.1f", appUi.rating)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = app.description,

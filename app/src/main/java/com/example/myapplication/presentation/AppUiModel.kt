@@ -5,5 +5,6 @@ import com.example.myapplication.domain.AppDomain
 
 data class AppUiModel(
     val domain: AppDomain,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val rating: Float? = null
 )
