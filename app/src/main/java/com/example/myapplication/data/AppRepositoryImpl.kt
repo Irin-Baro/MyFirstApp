@@ -7,6 +7,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
@@ -15,20 +16,20 @@ class AppRepositoryImpl @Inject constructor(
 ) : AppRepository {
 
     override fun getApps(): Flow<List<AppDomain>> = flow {
-        try {
-            val response: List<CatalogResponse> = apiService.getCatalog()
-            val domainApps = response.map { dto ->
-                AppDomain(
-                    id = dto.id,
-                    name = dto.name,
-                    description = dto.description,
-                    category = dto.category
-                )
-            }
-            emit(domainApps)
-        } catch (e: Exception) {
-            emit(emptyList())
+        val response: List<CatalogResponse> = apiService.getCatalog()
+        val domainApps = response.map { dto ->
+            AppDomain(
+                id = dto.id,
+                name = dto.name,
+                description = dto.description,
+                category = dto.category
+            )
         }
+        emit(domainApps)
+    }.catch { e ->
+        // Вместо emit в catch, используем оператор Flow.catch
+        // Это безопасный способ обработать ошибку в потоке
+        emit(emptyList())
     }
 
     // Последовательная загрузка (каждый запрос ждет предыдущего)
